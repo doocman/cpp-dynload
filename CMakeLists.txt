@@ -1,5 +1,5 @@
 
-cmake_minimum_required(VERSION 3.25)
+cmake_minimum_required(VERSION 3.22...3.25)
 
 project(DynamicLoad LANGUAGES CXX)
 
@@ -56,6 +56,10 @@ if (DYNLOAD_IMPORT)
         if (WIN32)
             target_sources(dynl PRIVATE
                     src/dynl_win32.cpp
+                    )
+        elseif (UNIX)
+            target_sources(dynl PRIVATE
+                    src/dynl_unix.cpp
                     )
         else ()
             message(SEND_ERROR "Dynload: no automatic backend available! Use custom defined source file")

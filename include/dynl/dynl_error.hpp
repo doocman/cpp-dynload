@@ -28,7 +28,7 @@ enum class dynl_ec {
   case dynl_ec::symbol_not_found:
     return "Symbol not found";
   case dynl_ec::library_not_found:
-    return "Library not found";
+    return "Library file not found";
   case dynl_ec::bad_input_parameter:
     return "Bad input argument";
   default:
