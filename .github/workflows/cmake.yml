@@ -1,0 +1,76 @@
+name: CMake
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+env:
+  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+  BUILD_TYPE: Release
+
+jobs:
+  build-ubuntu:
+    # The CMake configure and build commands are platform agnostic and should work equally well on Windows or Mac.
+    # You can convert this to a matrix build if you need cross-platform coverage.
+    # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - uses: ashutoshvarma/setup-ninja@master
+
+    - name: Configure CMake GCC
+      run: cmake --preset=gcc-release .
+
+    - name: Build GCC
+      run: cmake --build ${{github.workspace}}/build/gcc-release
+
+    - name: Configure CMake Clang
+      run: cmake --preset=clang-release .
+
+    - name: Build Clang
+      run: cmake --build ${{github.workspace}}/build/clang-release
+
+    - name: Test GCC
+      working-directory: ${{github.workspace}}/build/gcc-release
+      run: ctest -C
+
+    - name: Test Clang
+      working-directory: ${{github.workspace}}/build/clang-release
+      run: ctest -C
+    
+  build-windows:
+    runs-on: windows-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    - uses: ilammy/msvc-dev-cmd@v1
+    
+    - name: Configure CMake MSVC
+      run: cmake --preset=msvc22-reldeb .
+
+    - name: Build MSVC
+      run: cmake --build ${{github.workspace}}\build\msvc22-relwithdebinfo
+    
+    - name: Configure CMake MSVC Debug
+      run: cmake --preset=msvc22-debug .
+
+    - name: Build MSVC Debug
+      run: cmake --build ${{github.workspace}}\build\msvc22-debug
+
+    - name: Configure CMake Clang
+      run: cmake --preset=clang-release .
+
+    - name: Build Clang
+      run: cmake --build ${{github.workspace}}\build\clang-release
+
+    - name: Test MSVC
+      working-directory: ${{github.workspace}}\build\msvc22-relwithdebinfo
+      run: ctest -C
+
+    - name: Test Clang
+      working-directory: ${{github.workspace}}\build\clang-release
+      run: ctest -C
+
