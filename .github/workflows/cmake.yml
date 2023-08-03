@@ -52,13 +52,13 @@ jobs:
       run: cmake --preset=msvc22-reldeb .
 
     - name: Build MSVC
-      run: cmake --build ${{github.workspace}}/build/msvc22-relwithdebinfo
+      run: cmake --build ${{github.workspace}}\build\msvc22-relwithdebinfo
     
     - name: Configure CMake MSVC Debug
       run: cmake --preset=msvc22-debug .
 
     - name: Build MSVC Debug
-      run: cmake --build ${{github.workspace}}/build/msvc22-debug
+      run: cmake --build ${{github.workspace}}\build\msvc22-debug
 
     - name: Configure CMake Clang
       run: cmake --preset=clang-release .
@@ -67,7 +67,7 @@ jobs:
       run: cmake --build ${{github.workspace}}\build\clang-release
 
     - name: Test MSVC
-      working-directory: ${{github.workspace}}\build\msvc-release
+      working-directory: ${{github.workspace}}\build\msvc22-relwithdebinfo
       run: ctest -C
 
     - name: Test Clang
