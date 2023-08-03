@@ -1,7 +1,7 @@
 
 include(FetchContent)
 
-set(DYNLOAD_GTEST_VERSION "v1.13.0")
+set(DYNLOAD_GTEST_VERSION "v1.14.0")
 
 FetchContent_Declare(
         googletest

@@ -90,5 +90,6 @@ int main(int argc, char **argv) {
     return EXIT_FAILURE;
   }
   dynltest::lib_path = argv[1];
+  std::cout << "libpath: " << dynltest::lib_path << '\n';
   return RUN_ALL_TESTS();
 }

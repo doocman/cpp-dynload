@@ -42,6 +42,13 @@
       }
     },
     {
+      "name": "linux-test-include",
+      "hidden": true,
+      "cacheVariables": {
+        "DYNLOAD_TEST_EXPORTS": "${sourceDir}/build/clang-release/tests/cross_tests/libdynload.tests.cross_tests.export_this.so;${sourceDir}/build/gcc-release/tests/cross_tests/libdynload.tests.cross_tests.export_this.so"
+      }
+    },
+    {
       "name": "msvc-base",
       "hidden": true,
       "condition": {
@@ -69,7 +76,7 @@
     {
       "name": "gcc-base",
       "hidden": true,
-      "inherits": ["gcc-warnings", "dynl-dev"],
+      "inherits": ["gcc-warnings", "dynl-dev", "linux-test-include"],
       "cacheVariables": {
         "CMAKE_CXX_COMPILER": "g++",
         "CMAKE_C_COMPILER": "gcc"
