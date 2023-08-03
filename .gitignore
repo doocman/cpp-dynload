@@ -30,3 +30,13 @@
 *.exe
 *.out
 *.app
+
+# IDE-specifics
+.idea
+
+# common build out-folders:
+out-*
+cmake-build-*
+build
+
+CMakeUserPresets.json
