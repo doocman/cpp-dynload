@@ -19,9 +19,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    
-    - name: Setup Ninja
-      uses: ashutoshvarma/setup-ninja@master
+    - uses: ashutoshvarma/setup-ninja@master
 
     - name: Configure CMake GCC
       run: cmake --preset=gcc-release .
@@ -48,6 +46,7 @@ jobs:
     
     steps:
     - uses: actions/checkout@v3
+    - uses: ilammy/msvc-dev-cmd@v1
     
     - name: Configure CMake MSVC
       run: cmake --preset=msvc22-reldeb .
