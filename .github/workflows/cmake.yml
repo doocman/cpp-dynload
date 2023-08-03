@@ -24,32 +24,46 @@ jobs:
       uses: ashutoshvarma/setup-ninja@master
 
     - name: Configure CMake GCC
-      # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
-      # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
       run: cmake --preset=gcc-release .
 
     - name: Build GCC
-      # Build your program with the given configuration
       run: cmake --build ${{github.workspace}}/build/gcc-release
 
     - name: Configure CMake Clang
-      # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
-      # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
       run: cmake --preset=clang-release .
 
     - name: Build Clang
-      # Build your program with the given configuration
       run: cmake --build ${{github.workspace}}/build/clang-release
 
     - name: Test GCC
       working-directory: ${{github.workspace}}/build/gcc-release
-      # Execute tests defined by the CMake configuration.
-      # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
       run: ctest -C
 
     - name: Test Clang
       working-directory: ${{github.workspace}}/build/clang-release
-      # Execute tests defined by the CMake configuration.
-      # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
+      run: ctest -C
+    
+  build-windows:
+    runs-on: windows-latest
+    
+    steps:
+    - name: Configure CMake MSVC
+      run: cmake --preset=msvc-release .
+
+    - name: Build MSVC
+      run: cmake --build ${{github.workspace}}/build/msvc-release
+
+    - name: Configure CMake Clang
+      run: cmake --preset=clang-release .
+
+    - name: Build Clang
+      run: cmake --build ${{github.workspace}}/build/clang-release
+
+    - name: Test MSVC
+      working-directory: ${{github.workspace}}/build/msvc-release
+      run: ctest -C
+
+    - name: Test Clang
+      working-directory: ${{github.workspace}}/build/clang-release
       run: ctest -C
 
