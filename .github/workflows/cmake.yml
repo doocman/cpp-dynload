@@ -50,10 +50,16 @@ jobs:
     - uses: actions/checkout@v3
     
     - name: Configure CMake MSVC
-      run: cmake --preset=msvc-release .
+      run: cmake --preset=msvc22-reldeb .
 
     - name: Build MSVC
-      run: cmake --build ${{github.workspace}}/build/msvc-release
+      run: cmake --build ${{github.workspace}}/build/msvc22-relwithdebinfo
+    
+    - name: Configure CMake MSVC Debug
+      run: cmake --preset=msvc22-debug .
+
+    - name: Build MSVC Debug
+      run: cmake --build ${{github.workspace}}/build/msvc22-debug
 
     - name: Configure CMake Clang
       run: cmake --preset=clang-release .
