@@ -1,0 +1,132 @@
+{
+  "version": 3,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 22,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "dynl-dev",
+      "hidden": true,
+      "cacheVariables": {
+        "DYNLOAD_DEVELOP": true
+      }
+    },
+    {
+      "name": "msvc-warnings",
+      "hidden": true,
+      "cacheVariables": {
+        "DYNL_COMPILE_FLAGS": "/W4;/w14242;/w14254;/w14263;/w14265;/w14287;/we4289;/w14296;/w14311;/w14545;/w14546;/w14547;/w14549;/w14555;/w14619;/w14640;/w14826;/w14905;/w14906;/w14928;/permissive-;/wd4265"
+      }
+    },
+    {
+      "name": "clang-warnings",
+      "hidden": true,
+      "cacheVariables": {
+        "DYNL_COMPILE_FLAGS": "-Wall;-Wextra;-Wpedantic;-Wno-unknown-attributes"
+      }
+    },
+    {
+      "name": "gcc-warnings",
+      "hidden": true,
+      "cacheVariables": {
+        "DYNL_COMPILE_FLAGS": "-Wall;-Wextra;-Wpedantic"
+      }
+    },
+    {
+      "name": "windows-test-include",
+      "hidden": true,
+      "cacheVariables": {
+        "DYNLOAD_TEST_EXPORTS": "${sourceDir}/build/clang-release/tests/cross_tests/dynload.tests.cross_tests.export_this.dll;${sourceDir}/build/msvc22-debug/tests/cross_tests/dynload.tests.cross_tests.export_this.dll;${sourceDir}/build/msvc22-relwithdebinfo/tests/cross_tests/dynload.tests.cross_tests.export_this.dll"
+      }
+    },
+    {
+      "name": "msvc-base",
+      "hidden": true,
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      },
+      "inherits": ["msvc-warnings", "dynl-dev", "windows-test-include"],
+      "cacheVariables": {
+        "CMAKE_CXX_COMPILER": "cl",
+        "CMAKE_C_COMPILER": "cl"
+      },
+      "generator": "Ninja"
+    },
+    {
+      "name": "clang-base",
+      "hidden": true,
+      "inherits": ["clang-warnings", "dynl-dev"],
+      "cacheVariables": {
+        "CMAKE_CXX_COMPILER": "clang++",
+        "CMAKE_C_COMPILER": "clang"
+      },
+      "generator": "Ninja"
+    },
+    {
+      "name": "gcc-base",
+      "hidden": true,
+      "inherits": ["gcc-warnings", "dynl-dev"],
+      "cacheVariables": {
+        "CMAKE_CXX_COMPILER": "g++",
+        "CMAKE_C_COMPILER": "gcc"
+      },
+      "generator": "Ninja"
+    },
+    {
+      "name": "crosscompile-base",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      },
+      "generator": "Ninja"
+    },
+    {
+      "name": "msvc22-debug",
+      "binaryDir": "${sourceDir}/build/msvc22-debug",
+      "inherits": [
+        "msvc-base"
+      ],
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      },
+      "installDir": "${sourceDir}/install/msvc22-debug"
+    },
+    {
+      "name": "msvc22-reldeb",
+      "binaryDir": "${sourceDir}/build/msvc22-relwithdebinfo",
+      "inherits": [
+        "msvc-base"
+      ],
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo"
+      },
+      "installDir": "${sourceDir}/install/msvc22-relwithdebinfo"
+    },
+    {
+      "name": "clang-release",
+      "inherits": [
+        "clang-base"
+      ],
+      "binaryDir": "${sourceDir}/build/clang-release",
+      "installDir": "${sourceDir}/install/clang-release",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    },
+    {
+      "name": "gcc-release",
+      "inherits": [
+        "gcc-base"
+      ],
+      "binaryDir": "${sourceDir}/build/gcc-release",
+      "installDir": "${sourceDir}/install/gcc-release",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    }
+  ]
+}

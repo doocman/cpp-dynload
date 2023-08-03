@@ -9,14 +9,15 @@ set(DYNLOAD_IMPORT ON CACHE BOOL "Set to true if needing importing part of DYNLO
 set(DYNLOAD_EXPORT ON CACHE BOOL "Set to true if needing exporting part of DYNLOAD")
 set(DYNLOAD_COMPILE_PLATFORM ON CACHE BOOL "If true, dynl will be automatically compiled for the target platform. Set to false if custom backend is needed.")
 
-set(DYNLOAD_DEV_LINK "")
+add_library(dynl_compile_opts INTERFACE)
+add_library(dynl::compile_opts ALIAS dynl_compile_opts)
+target_compile_options(dynl_compile_opts INTERFACE ${DYNL_COMPILE_FLAGS})
 
+set(DYNLOAD_DEV_LINK dynl_compile_opts)
 if (DYNLOAD_DEVELOP)
     set(CMAKE_CXX_STANDARD 11)
     enable_testing()
-    include(use_project_options.cmake)
     include(use_google_test.cmake)
-    set(DYNLOAD_DEV_LINK PRIVATE dynload_project_options dynload_project_warnings)
     add_subdirectory(tests)
 endif ()
 
@@ -26,7 +27,6 @@ if (DYNLOAD_IMPORT)
     target_include_directories(dynl_headers INTERFACE
             include
             )
-    #set_property(TARGET dynl_headers PROPERTY CXX_STANDARD 20)
     target_compile_features(dynl_headers INTERFACE cxx_std_20)
 
     add_library(dynl_shared)

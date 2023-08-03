@@ -25,6 +25,10 @@ set(DYNLOAD_TEST_EXPORTS "" CACHE FILEPATH "Populate these with the compilers yo
 
 set(COMPID 0)
 foreach (DL_TEST_EXPORT IN LISTS DYNLOAD_TEST_EXPORTS)
+
+    if(NOT IS_ABSOLUTE "${DL_TEST_EXPORT}")
+        set(DL_TEST_EXPORT "${CMAKE_SOURCE_DIR}/${DL_TEST_EXPORT}")
+    endif ()
     cmake_path(CONVERT "${DL_TEST_EXPORT}" TO_NATIVE_PATH_LIST DYNLOAD_FILE_NATIVE)
 
     add_test(
@@ -33,5 +37,5 @@ foreach (DL_TEST_EXPORT IN LISTS DYNLOAD_TEST_EXPORTS)
     )
 
     math(EXPR COMPID "${COMPID} + 1")
-    message(STATUS "Added compiler ${COMPILER}")
+    message(STATUS "Added file ${DYNLOAD_FILE_NATIVE} for ID ${COMPID}")
 endforeach ()

@@ -19,7 +19,6 @@ using namespace ::testing;
 using namespace ::dynl;
 
 char const *lib_path{};
-char const *infostr{};
 
 class DynLoadTest : public ::testing::Test {
 protected:
@@ -37,7 +36,6 @@ TEST_F(DynLoadTest, ImportSimpleFunction) // NOLINT
 }
 TEST_F(DynLoadTest, SizeOfInts) // NOLINT
 {
-  dynl::dynamic_library lib(lib_path);
   EXPECT_THAT(std::invoke(find_function<std::size_t()>(lib, "sizeof_size_t")),
               Eq(sizeof(std::size_t)));
   EXPECT_THAT(
@@ -55,7 +53,6 @@ TEST_F(DynLoadTest, SizeOfInts) // NOLINT
 }
 TEST_F(DynLoadTest, ReturnCustomType) // NOLINT
 {
-  dynl::dynamic_library lib(lib_path);
   EXPECT_THAT(
       std::invoke(find_function<std::size_t()>(lib, "sizeof_dynl_test_struct")),
       Eq(sizeof(test_struct)));
@@ -75,7 +72,7 @@ TEST_F(DynLoadTest, ReturnCustomType) // NOLINT
       std::invoke(find_function<test_struct()>(lib, "create_test_struct"));
   EXPECT_THAT(ts.data1, Eq(1));
   EXPECT_THAT(ts.data2, Eq('2'));
-  EXPECT_THAT(ts.data3, Eq(3.0));
+  EXPECT_THAT(ts.data3, DoubleEq(3.0));
   EXPECT_THAT(ts.data4, ElementsAre('4', '5', '6'));
   EXPECT_THAT(ts.data5, Eq(7LL));
   EXPECT_THAT(ts.data6, Eq('8'));
@@ -85,10 +82,13 @@ TEST_F(DynLoadTest, ReturnCustomType) // NOLINT
 int main(int argc, char **argv) {
   ::testing::InitGoogleMock(&argc, argv);
   if (argc != 3) {
-    std::cerr << "Bad input arguments! Use 'IMPORTFILE' 'INFOSTR'\n";
+    std::cerr << "Bad input arguments! Use 'IMPORTFILE' 'INFOSTR'\n"
+              << argc << '\n';
+    for (int i = 0; i < argc; ++i) {
+      std::cerr << argv[i] << '\n';
+    }
     return EXIT_FAILURE;
   }
   dynltest::lib_path = argv[1];
-  dynltest::infostr = argv[2];
   return RUN_ALL_TESTS();
 }
