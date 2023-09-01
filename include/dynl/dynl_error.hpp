@@ -64,15 +64,27 @@ class error_callback {
     return static_cast<void *>(
         &const_cast<std::remove_cvref_t<decltype(in)> &>(in));
   }
+  template <typename T>
+  constexpr explicit error_callback(T &&t, int)
+      : context_(void_ptr_cast(t)), func_([](void *in, dynl_error const &err) {
+          std::invoke(*static_cast<std::remove_reference_t<T> *>(in), err);
+        }) {}
 
 public:
   template <typename T>
     requires(std::invocable<T, dynl_error const &> &&
              !std::is_rvalue_reference_v<T &&>)
   constexpr explicit(false) error_callback(T &&t)
-      : context_(void_ptr_cast(t)), func_([](void *in, dynl_error const &err) {
-          std::invoke(*static_cast<std::remove_reference_t<T> *>(in), err);
-        }) {}
+      : error_callback(std::forward<T>(t), 0) {}
+
+  template <typename T>
+    requires(
+        std::invocable<T, dynl_error const &> &&
+        std::convertible_to<T, std::add_pointer_t<void(dynl_error const &)>>)
+  constexpr explicit(false) error_callback(T const &t)
+      : error_callback(
+            static_cast<std::add_pointer_t<void(dynl_error const &)>>(t), 0) {}
+
   void operator()(dynl_error const &err) const {
     std::invoke(func_, context_, err);
   }
