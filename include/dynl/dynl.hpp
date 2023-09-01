@@ -122,6 +122,10 @@ public:
   explicit dynamic_library(
       char const *path, error_callback const &ecb = {_default_error_callbacker})
       : lib_(_backend::do_load_library(path, ecb)) {}
+  template <typename T>
+    requires(std::convertible_to<T &, error_callback>)
+  dynamic_library(char const *path, T &&ecb)
+      : dynamic_library(path, error_callback(ecb)) {}
 
   constexpr dynamic_library() = default;
 
