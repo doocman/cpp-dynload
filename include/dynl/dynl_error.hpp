@@ -55,35 +55,48 @@ public:
 }
 
 class error_callback {
-  static constexpr auto noop_func = [](void *, dynl_error const &) {};
-  void *context_{};
-  std::add_pointer_t<void(void *, dynl_error const &)> func_ = noop_func;
-  static constexpr void *void_ptr_cast(auto &in) {
+  using f_ptr_t = std::add_pointer_t<void(dynl_error const &)>;
+  union cb_t {
+    void *data_{};
+    f_ptr_t f_ptr_;
+  };
+  static constexpr auto noop_func = [](cb_t, dynl_error const &) {};
+  cb_t context_{};
+  std::add_pointer_t<void(cb_t, dynl_error const &)> func_ = noop_func;
+  static constexpr cb_t void_ptr_cast(auto *in) {
     // this const-cast is safe as we re-apply the constness in the cast in
     // func_;
-    return static_cast<void *>(
-        &const_cast<std::remove_cvref_t<decltype(in)> &>(in));
+    return cb_t{.data_ = static_cast<void *>(in)};
+  }
+  static constexpr cb_t
+  void_ptr_cast(std::add_pointer_t<void(dynl_error const &)> in) {
+    return cb_t{.f_ptr_ = in};
   }
   template <typename T>
-  constexpr explicit error_callback(T &&t, int)
-      : context_(void_ptr_cast(t)), func_([](void *in, dynl_error const &err) {
-          std::invoke(*static_cast<std::remove_reference_t<T> *>(in), err);
+  constexpr explicit error_callback(T *t, int)
+      : context_(void_ptr_cast(t)), func_([](cb_t in, dynl_error const &err) {
+          if constexpr (std::is_same_v<f_ptr_t, T*>) {
+            std::invoke(in.f_ptr_, err);
+          } else {
+            std::invoke(*static_cast<T *>(in.data_), err);
+          }
         }) {}
 
 public:
   template <typename T>
     requires(std::invocable<T, dynl_error const &> &&
-             !std::is_rvalue_reference_v<T &&>)
+             !std::is_rvalue_reference_v<T &&> &&
+             !std::is_same_v<std::remove_cvref_t<T>, error_callback>)
   constexpr explicit(false) error_callback(T &&t)
-      : error_callback(std::forward<T>(t), 0) {}
+      : error_callback(&std::forward<T>(t), 0) {}
 
   template <typename T>
     requires(
         std::invocable<T, dynl_error const &> &&
-        std::convertible_to<T, std::add_pointer_t<void(dynl_error const &)>>)
+        std::convertible_to<T, std::add_pointer_t<void(dynl_error const &)>> &&
+        !std::is_same_v<std::remove_cvref_t<T>, error_callback>)
   constexpr explicit(false) error_callback(T const &t)
-      : error_callback(
-            static_cast<std::add_pointer_t<void(dynl_error const &)>>(t), 0) {}
+      : error_callback(static_cast<f_ptr_t>(t), 0) {}
 
   void operator()(dynl_error const &err) const {
     std::invoke(func_, context_, err);
