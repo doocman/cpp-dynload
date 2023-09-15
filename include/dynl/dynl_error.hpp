@@ -53,6 +53,9 @@ public:
 [[nodiscard]] constexpr char const *cstr_message(dynl_error const &err) {
   return cstr_message(err.error_code());
 }
+constexpr bool operator==(dynl_error lhs, dynl_error rhs) noexcept {
+  return lhs.error_code() == rhs.error_code();
+}
 
 namespace details {
 class error_callback {
@@ -67,7 +70,7 @@ class error_callback {
   static constexpr cb_t void_ptr_cast(auto *in) {
     // this const-cast is safe as we re-apply the constness in the cast in
     // func_;
-    return cb_t{.data_ = static_cast<void *>(in)};
+    return cb_t{.data_ = reinterpret_cast<void *>(in)};
   }
   static constexpr cb_t
   void_ptr_cast(std::add_pointer_t<void(dynl_error const &)> in) {
@@ -88,8 +91,7 @@ public:
     requires(std::invocable<T, dynl_error const &> &&
              !std::is_rvalue_reference_v<T &&> &&
              !std::is_same_v<std::remove_cvref_t<T>, error_callback>)
-  constexpr explicit(false) error_callback(T &&t)
-      : error_callback(&std::forward<T>(t), 0) {}
+  constexpr explicit(false) error_callback(T &&t) : error_callback(&t, 0) {}
 
   template <typename T>
     requires(

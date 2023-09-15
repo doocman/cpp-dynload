@@ -128,7 +128,7 @@ public:
     requires(std::convertible_to<T &, details::error_callback> &&
              !std::is_same_v<std::remove_cvref_t<T>, details::error_callback>)
   dynamic_library(char const *path, T &&ecb)
-      : dynamic_library(path, error_callback(ecb)) {}
+      : dynamic_library(path, details::error_callback(ecb)) {}
   explicit dynamic_library(char const *path)
       : dynamic_library(path,
                         details::error_callback(_default_error_callbacker)) {}

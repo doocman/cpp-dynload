@@ -7,8 +7,9 @@
 #include <gmock/gmock.h>
 
 namespace dynl {
-TEST(DynlError, CompileTest) {
-  (void)error_callback([](dynl_error const &) {});
+TEST(DynlError, CompileTest) // NOLINT
+{
+  (void)details::error_callback([](dynl_error const &) {});
 }
 
 } // namespace dynl
