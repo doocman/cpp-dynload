@@ -18,7 +18,7 @@ void *as_native_lib(dynamic_library_pointer *in) {
 
 dynamic_function_symbol do_find_function(dynamic_library_pointer *lib,
                                          char const *name,
-                                         error_callback const &ecb) {
+                                         details::error_callback const &ecb) {
   if (auto *handle = dlsym(as_native_lib(lib), name)) {
     return dynamic_function_symbol(
         reinterpret_cast<c_function_pointer<void()>>(handle));
@@ -29,7 +29,7 @@ dynamic_function_symbol do_find_function(dynamic_library_pointer *lib,
 }
 
 dynamic_library_pointer *do_load_library(char const *p,
-                                         error_callback const &ecb) {
+                                         details::error_callback const &ecb) {
   if (auto *handle = dlopen(p, RTLD_NOW)) {
     return as_placeholder(handle);
   } else {

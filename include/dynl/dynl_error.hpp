@@ -54,6 +54,7 @@ public:
   return cstr_message(err.error_code());
 }
 
+namespace details {
 class error_callback {
   using f_ptr_t = std::add_pointer_t<void(dynl_error const &)>;
   union cb_t {
@@ -75,7 +76,7 @@ class error_callback {
   template <typename T>
   constexpr explicit error_callback(T *t, int)
       : context_(void_ptr_cast(t)), func_([](cb_t in, dynl_error const &err) {
-          if constexpr (std::is_same_v<f_ptr_t, T*>) {
+          if constexpr (std::is_same_v<f_ptr_t, T *>) {
             std::invoke(in.f_ptr_, err);
           } else {
             std::invoke(*static_cast<T *>(in.data_), err);
@@ -102,6 +103,7 @@ public:
     std::invoke(func_, context_, err);
   }
 };
+} // namespace details
 } // namespace dynl
 
 #endif // DYNAMICLOAD_DYNL_ERROR_HPP

@@ -23,6 +23,8 @@ void _default_error_callback(dynl_error const &);
 constexpr auto _default_error_callbacker = [](dynl_error const &err) {
   _default_error_callback(err);
 };
+using _default_error_callbacker_t = std::remove_reference_t<
+    std::remove_cv_t<decltype(_default_error_callbacker)>>;
 
 class dynamic_library;
 class dynamic_function_symbol;
@@ -42,9 +44,9 @@ namespace _backend {
 /// \param err_cb Error handler. Default throws exception if enabled, otherwise
 /// aborts with error message.
 /// \return Library pointer. Can be null if err_cb returns without throwing.
-dynamic_library_pointer *do_load_library(char const *p,
-                                         error_callback const &err_cb = {
-                                             _default_error_callbacker});
+dynamic_library_pointer *
+do_load_library(char const *p, details::error_callback const &err_cb = {
+                                   _default_error_callbacker});
 
 /// Platform-dependent low-level dynamic library function access.
 /// You must implement your own version of this when extending the code for
@@ -61,9 +63,9 @@ void do_release_library(dynamic_library_pointer *p);
 /// \param err_cb Error handler. Default throws exception if enabled, otherwise
 /// aborts with error message.
 /// \return Symbol, can be null if callback returns without throwing.
-dynamic_function_symbol
-do_find_function(dynamic_library_pointer *lib, char const *name,
-                 error_callback const &err_cb = {_default_error_callbacker});
+dynamic_function_symbol do_find_function(
+    dynamic_library_pointer *lib, char const *name,
+    details::error_callback const &err_cb = {_default_error_callbacker});
 } // namespace _backend
 
 /// \class dynamic_function_symbol
@@ -118,14 +120,18 @@ using smart_library_pointer =
 class dynamic_library {
   smart_library_pointer lib_;
 
-public:
-  explicit dynamic_library(
-      char const *path, error_callback const &ecb = {_default_error_callbacker})
+  dynamic_library(char const *path, details::error_callback const &ecb)
       : lib_(_backend::do_load_library(path, ecb)) {}
+
+public:
   template <typename T>
-    requires(std::convertible_to<T &, error_callback>)
+    requires(std::convertible_to<T &, details::error_callback> &&
+             !std::is_same_v<std::remove_cvref_t<T>, details::error_callback>)
   dynamic_library(char const *path, T &&ecb)
       : dynamic_library(path, error_callback(ecb)) {}
+  explicit dynamic_library(char const *path)
+      : dynamic_library(path,
+                        details::error_callback(_default_error_callbacker)) {}
 
   constexpr dynamic_library() = default;
 
@@ -136,11 +142,12 @@ public:
   /// \param ecb Error handler. Default throws exception if enabled, otherwise
   /// aborts with error message.
   /// \return Function pointer. May be null if ecb returns without throwing.
-  template <typename T>
-  friend c_function_pointer<T>
-  find_function(dynamic_library const &in, char const *name,
-                error_callback const &ecb = {_default_error_callbacker}) {
-    auto res = _backend::do_find_function(in.lib_.get(), name, ecb);
+  template <typename T, typename TErrCB = _default_error_callbacker_t>
+  friend c_function_pointer<T> find_function(dynamic_library const &in,
+                                             char const *name,
+                                             TErrCB &&ecb = {}) {
+    details::error_callback ecb_wrap(ecb);
+    auto res = _backend::do_find_function(in.lib_.get(), name, ecb_wrap);
     return symbol_cast<T>(res);
   }
   [[nodiscard]] bool valid() const noexcept { return lib_ != nullptr; }

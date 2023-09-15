@@ -17,7 +17,7 @@ HMODULE native_lib(dynamic_library_pointer *in) {
 } // namespace
 dynamic_function_symbol do_find_function(dynamic_library_pointer *lib,
                                          char const *name,
-                                         error_callback const &ecb) {
+                                         details::error_callback const &ecb) {
   if (auto *f = GetProcAddress(native_lib(lib), name)) {
     return dynamic_function_symbol(
         reinterpret_cast<std::add_pointer_t<void()>>(f));
@@ -28,7 +28,7 @@ dynamic_function_symbol do_find_function(dynamic_library_pointer *lib,
 }
 
 dynamic_library_pointer *do_load_library(char const *p,
-                                         error_callback const &ecb) {
+                                         details::error_callback const &ecb) {
   if (auto *l = LoadLibraryA(p); l != nullptr) {
     return placeholder(l);
   } else {
