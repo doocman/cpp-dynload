@@ -33,6 +33,7 @@
 
 # IDE-specifics
 .idea
+.vs
 
 # common build out-folders:
 out-*

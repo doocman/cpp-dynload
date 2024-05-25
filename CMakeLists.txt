@@ -8,6 +8,7 @@ set(DYNLOAD_USE_EXCEPTIONS ON CACHE BOOL "Standard C++ uses exceptions, thus, th
 set(DYNLOAD_IMPORT ON CACHE BOOL "Set to true if needing importing part of DYNLOAD")
 set(DYNLOAD_EXPORT ON CACHE BOOL "Set to true if needing exporting part of DYNLOAD")
 set(DYNLOAD_COMPILE_PLATFORM ON CACHE BOOL "If true, dynl will be automatically compiled for the target platform. Set to false if custom backend is needed.")
+set(DYNLOAD_HEADERONLY OFF CACHE BOOL "Set to true to use dynload as a header-only library")
 
 add_library(dynl_compile_opts INTERFACE)
 add_library(dynl::compile_opts ALIAS dynl_compile_opts)
@@ -29,15 +30,6 @@ if (DYNLOAD_IMPORT)
             )
     target_compile_features(dynl_headers INTERFACE cxx_std_20)
 
-    add_library(dynl_shared)
-    add_library(dynl::dynl_shared ALIAS dynl_shared)
-    target_link_libraries(dynl_shared PUBLIC
-            dynl::dynl_headers
-            ${DYNLOAD_DEV_LINK}
-            )
-    target_sources(dynl_shared PRIVATE
-            src/dynl_shared.cpp
-            )
     if (DYNLOAD_USE_EXCEPTIONS)
     else ()
         target_compile_definitions(dynl_shared PRIVATE
@@ -45,27 +37,39 @@ if (DYNLOAD_IMPORT)
                 )
     endif ()
 
+    if (DYNLOAD_HEADERONLY)
+    set(DYNLOAD_LIB_TYPE INTERFACE)
+    set(DYNLOAD_PUBLIC_LINK_TYPE INTERFACE)
+    else ()
+    set(DYNLOAD_LIB_TYPE "")
+    set(DYNLOAD_PUBLIC_LINK_TYPE PUBLIC)
+    endif ()
 
-    add_library(dynl)
+    add_library(dynl ${DYNLOAD_LIB_TYPE})
     add_library(dynl::dynl ALIAS dynl)
-    target_link_libraries(dynl PUBLIC
-            dynl::dynl_shared
+    target_link_libraries(dynl ${DYNLOAD_PUBLIC_LINK_TYPE}
+            dynl::dynl_headers
             ${DYNLOAD_DEV_LINK}
             )
     if (DYNLOAD_COMPILE_PLATFORM)
         if (WIN32)
-            target_sources(dynl PRIVATE
-                    src/dynl_win32.cpp
-                    )
+            set(DYNL_SRC src/dynl_win32.cpp)
+            set(DYNL_PLATFORM DYNL_WINDOWS=1)
         elseif (UNIX)
-            target_sources(dynl PRIVATE
-                    src/dynl_unix.cpp
-                    )
+            set(DYNL_SRC src/dynl_unix.cpp)
+            set(DYNL_PLATFORM DYNL_UNIX=1)
         else ()
             message(SEND_ERROR "Dynload: no automatic backend available! Use custom defined source file")
         endif ()
     else ()
         message(STATUS "Dynload: no automatic backend. Custom defined source-file(-s) for 'dynl' required")
+        set(DYNL_SRC "")
+        set(DYNL_PLATFORM "")
+    endif ()
+    if(DYNLOAD_HEADERONLY)
+        target_compile_definitions(dynl INTERFACE DYNLOAD_HEADERONLY=1 ${DYNL_PLATFORM})
+    else ()
+        target_sources(dynl PRIVATE ${DYNL_SRC})
     endif ()
 endif ()
 if (DYNLOAD_EXPORT)
