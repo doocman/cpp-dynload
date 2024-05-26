@@ -2,9 +2,7 @@
 // Created by rvons on 2023-06-29.
 //
 
-#include <dynl/dynl.hpp>
-
-#include <dynl/platform_details/dynl_headeronly.hpp>
+#include <dynl/platform_details/dynl_unix.hpp>
 
 namespace dynl::_backend {
 

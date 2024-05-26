@@ -6,7 +6,7 @@
 #if defined(DYNL_WINDOWS)
 #include <dynl/platform_details/dynl_win32.hpp>
 #elif defined(DYNL_UNIX)
-#include <dynl/platform_details/dynl_linux.hpp>
+#include <dynl/platform_details/dynl_unix.hpp>
 #endif
 
 

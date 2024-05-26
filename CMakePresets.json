@@ -144,12 +144,35 @@
       }
     },
     {
+      "name": "clang-hh-release",
+      "inherits": [
+        "clang-base",
+        "dynl-headeronly"
+      ],
+      "binaryDir": "${sourceDir}/build/clang-hh-release",
+      "installDir": "${sourceDir}/install/clang-hh-release",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    },
+    {
       "name": "gcc-release",
       "inherits": [
         "gcc-base"
       ],
       "binaryDir": "${sourceDir}/build/gcc-release",
       "installDir": "${sourceDir}/install/gcc-release",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    },
+    {
+      "name": "gcc-hh-release",
+      "inherits": [
+        "gcc-base"
+      ],
+      "binaryDir": "${sourceDir}/build/gcc-hh-release",
+      "installDir": "${sourceDir}/install/gcc-hh-release",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release"
       }
