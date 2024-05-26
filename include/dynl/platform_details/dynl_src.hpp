@@ -7,11 +7,11 @@
 
 namespace dynl::_backend {
 dynamic_function_symbol src_find_function(dynamic_library_pointer *lib,
-                                         char const *name,
-                                         error_callback const &ecb);
+                                          char const *name,
+                                          error_callback const &ecb);
 
 dynamic_library_pointer *src_load_library(char const *p,
-                                         error_callback const &ecb);
+                                          error_callback const &ecb);
 
 void src_release_library(dynamic_library_pointer *p);
 

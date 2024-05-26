@@ -1,6 +1,6 @@
 ///@file
 /// Contains default error handling routines when exceptions are enabled.
-/// 
+///
 
 #pragma once
 
@@ -9,7 +9,7 @@
 
 namespace dynl {
 
-inline void _default_error_callback(dynl_error const & err) {
+inline void _default_error_callback(dynl_error const &err) {
   throw dynl_except(err);
 }
-}
+} // namespace dynl

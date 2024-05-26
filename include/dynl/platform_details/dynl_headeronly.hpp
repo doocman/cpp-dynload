@@ -9,7 +9,6 @@
 #include <dynl/platform_details/dynl_unix.hpp>
 #endif
 
-
 namespace dynl::_backend {
 
 inline namespace {
@@ -26,4 +25,4 @@ dynamic_library_pointer *do_load_library(char const *p,
 
 void do_release_library(dynamic_library_pointer *p) { hh_release_library(p); }
 } // namespace
-}
+} // namespace dynl::_backend

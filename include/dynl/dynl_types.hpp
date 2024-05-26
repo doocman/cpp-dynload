@@ -53,5 +53,4 @@ public:
   friend c_function_pointer<T> symbol_cast(dynamic_function_symbol in);
 };
 
-}
-
+} // namespace dynl

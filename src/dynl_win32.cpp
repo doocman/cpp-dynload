@@ -16,7 +16,5 @@ dynamic_library_pointer *do_load_library(char const *p,
   return hh_load_library(p, ecb);
 }
 
-void do_release_library(dynamic_library_pointer *p) {
-  hh_release_library(p);
-}
+void do_release_library(dynamic_library_pointer *p) { hh_release_library(p); }
 } // namespace dynl::_backend
