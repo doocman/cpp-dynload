@@ -64,14 +64,21 @@ public:
   /// aborts with error message.
   /// \return Function pointer. May be null if ecb returns without throwing.
   template <typename T>
-  friend c_function_pointer<T>
-  find_function(dynamic_library const &in, char const *name,
-                error_callback const &ecb = {_default_error_callbacker}) {
-    auto res = _backend::do_find_function(in.lib_.get(), name, ecb);
+  c_function_pointer<T>
+  find_function(char const *name,
+                error_callback const &ecb = {_default_error_callbacker}) const {
+    auto res = _backend::do_find_function(lib_.get(), name, ecb);
     return symbol_cast<T>(res);
   }
   [[nodiscard]] bool valid() const noexcept { return lib_ != nullptr; }
   explicit operator bool() const noexcept { return valid(); }
 };
+
+template <typename T>
+c_function_pointer<T>
+find_function(dynamic_library const &in, char const *name,
+              error_callback const &ecb = {_default_error_callbacker}) {
+  return in.template find_function<T>(name, ecb);
+}
 
 } // namespace dynl
