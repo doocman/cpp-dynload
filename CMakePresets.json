@@ -14,6 +14,13 @@
       }
     },
     {
+      "name": "dynl-headeronly",
+      "hidden": true,
+      "cacheVariables": {
+        "DYNLOAD_HEADERONLY": true
+      }
+    },
+    {
       "name": "msvc-warnings",
       "hidden": true,
       "cacheVariables": {
@@ -56,7 +63,7 @@
         "lhs": "${hostSystemName}",
         "rhs": "Windows"
       },
-      "inherits": ["msvc-warnings", "dynl-dev", "windows-test-include"],
+      "inherits": [ "msvc-warnings", "dynl-dev", "windows-test-include" ],
       "cacheVariables": {
         "CMAKE_CXX_COMPILER": "cl",
         "CMAKE_C_COMPILER": "cl"
@@ -66,7 +73,7 @@
     {
       "name": "clang-base",
       "hidden": true,
-      "inherits": ["clang-warnings", "dynl-dev"],
+      "inherits": [ "clang-warnings", "dynl-dev" ],
       "cacheVariables": {
         "CMAKE_CXX_COMPILER": "clang++",
         "CMAKE_C_COMPILER": "clang"
@@ -76,7 +83,7 @@
     {
       "name": "gcc-base",
       "hidden": true,
-      "inherits": ["gcc-warnings", "dynl-dev", "linux-test-include"],
+      "inherits": [ "gcc-warnings", "dynl-dev", "linux-test-include" ],
       "cacheVariables": {
         "CMAKE_CXX_COMPILER": "g++",
         "CMAKE_C_COMPILER": "gcc"
@@ -103,6 +110,18 @@
       "installDir": "${sourceDir}/install/msvc22-debug"
     },
     {
+      "name": "msvc22-hh-debug",
+      "binaryDir": "${sourceDir}/build/msvc22-hh-debug",
+      "installDir": "${sourceDir}/install/msvc22-hh-debug",
+      "inherits": [
+        "msvc-base",
+        "dynl-headeronly"
+      ],
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
       "name": "msvc22-reldeb",
       "binaryDir": "${sourceDir}/build/msvc22-relwithdebinfo",
       "inherits": [
@@ -125,12 +144,35 @@
       }
     },
     {
+      "name": "clang-hh-release",
+      "inherits": [
+        "clang-base",
+        "dynl-headeronly"
+      ],
+      "binaryDir": "${sourceDir}/build/clang-hh-release",
+      "installDir": "${sourceDir}/install/clang-hh-release",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    },
+    {
       "name": "gcc-release",
       "inherits": [
         "gcc-base"
       ],
       "binaryDir": "${sourceDir}/build/gcc-release",
       "installDir": "${sourceDir}/install/gcc-release",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    },
+    {
+      "name": "gcc-hh-release",
+      "inherits": [
+        "gcc-base"
+      ],
+      "binaryDir": "${sourceDir}/build/gcc-hh-release",
+      "installDir": "${sourceDir}/install/gcc-hh-release",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release"
       }
