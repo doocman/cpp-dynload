@@ -72,5 +72,5 @@ jobs:
 
     - name: Test Clang
       working-directory: ${{github.workspace}}\build\clang-release
-      run: ctest -C
+      run: ctest
 
