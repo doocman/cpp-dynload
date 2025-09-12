@@ -35,11 +35,11 @@ jobs:
 
     - name: Test GCC
       working-directory: ${{github.workspace}}/build/gcc-release
-      run: ctest -C
+      run: ctest
 
     - name: Test Clang
       working-directory: ${{github.workspace}}/build/clang-release
-      run: ctest -C
+      run: ctest
     
   build-windows:
     runs-on: windows-latest
@@ -68,7 +68,7 @@ jobs:
 
     - name: Test MSVC
       working-directory: ${{github.workspace}}\build\msvc22-relwithdebinfo
-      run: ctest -C
+      run: ctest
 
     - name: Test Clang
       working-directory: ${{github.workspace}}\build\clang-release
