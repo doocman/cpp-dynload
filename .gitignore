@@ -39,5 +39,6 @@
 out-*
 cmake-build-*
 build
+install
 
 CMakeUserPresets.json
