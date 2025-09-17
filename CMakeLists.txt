@@ -1,7 +1,7 @@
 
 cmake_minimum_required(VERSION 3.22...4.2)
 
-set(DYNLOAD_VERSION 0.3)
+set(DYNLOAD_VERSION 0.4.0)
 
 project(DynamicLoad LANGUAGES CXX VERSION ${DYNLOAD_VERSION})
 
@@ -103,6 +103,7 @@ configure_package_config_file(
 
 install(TARGETS dynl dynl_headers dynl_export
         EXPORT dynlTargets
+        COMPONENT Dynload
         LIBRARY DESTINATION lib COMPONENT Runtime
         ARCHIVE DESTINATION lib COMPONENT Development
         RUNTIME DESTINATION bin COMPONENT Runtime
@@ -110,9 +111,17 @@ install(TARGETS dynl dynl_headers dynl_export
         BUNDLE DESTINATION bin COMPONENT Runtime
 )
 
-install(EXPORT dynlTargets DESTINATION lib/cmake/Dynload)
+install(EXPORT dynlTargets
+        DESTINATION lib/cmake/Dynload
+        NAMESPACE dynl::
+)
 install(FILES "${PROJECT_BINARY_DIR}/DynloadConfigVersion.cmake"
         "${PROJECT_BINARY_DIR}/DynloadConfig.cmake"
-        DESTINATION lib/cmake/Dynload)
-install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/ DESTINATION include)
+        COMPONENT Dynload
+        DESTINATION lib/cmake/Dynload
+)
+install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/
+        DESTINATION include
+        COMPONENT Dynload
+)
 
